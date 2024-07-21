@@ -5,15 +5,23 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/JustinLi007/pokedexcli/internal/pokeapi"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
 }
 
-func startRepl() {
+type config struct {
+	pokeapiClient    pokeapi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
+}
+
+func startRepl(cfg *config) {
 	commands := getCommands()
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -30,7 +38,7 @@ func startRepl() {
 		userInputParts := cleanInput(userInput)
 
 		if len(userInputParts) == 0 {
-			return
+			continue
 		}
 
 		commandName := userInputParts[0]
@@ -41,7 +49,7 @@ func startRepl() {
 			continue
 		}
 
-		if err := command.callback(); err != nil {
+		if err := command.callback(cfg); err != nil {
 			fmt.Fprintln(os.Stdout, err)
 			continue
 		}
@@ -56,6 +64,16 @@ func cleanInput(text string) []string {
 
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
+		"map": {
+			name:        "map",
+			description: "Get the next page of location areas",
+			callback:    commandMapForward,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get the previous page location areas",
+			callback:    commandMapBack,
+		},
 		"help": {
 			name:        "help",
 			description: "Display usage info",
