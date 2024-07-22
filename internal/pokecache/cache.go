@@ -1,6 +1,7 @@
 package pokecache
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -59,7 +60,8 @@ func (c *Cache) reapLoop(interval time.Duration) {
 			toRemove := make([]string, 0)
 			c.mtx.Lock()
 			for key, entry := range c.entries {
-				if entry.createdAt.After(time.Now()) {
+				if entry.createdAt.Add(interval).Before(time.Now()) {
+					fmt.Println("Add to list")
 					toRemove = append(toRemove, key)
 				}
 			}
