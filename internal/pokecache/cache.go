@@ -1,7 +1,6 @@
 package pokecache
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -16,8 +15,8 @@ type cacheEntry struct {
 	val       []byte
 }
 
-func NewCache(interval time.Duration) *Cache {
-	cache := &Cache{
+func NewCache(interval time.Duration) Cache {
+	cache := Cache{
 		entries: make(map[string]cacheEntry),
 		mtx:     &sync.RWMutex{},
 	}
@@ -32,7 +31,7 @@ func (c *Cache) Add(key string, val []byte) {
 	defer c.mtx.Unlock()
 
 	entry := cacheEntry{
-		createdAt: time.Now(),
+		createdAt: time.Now().UTC(),
 		val:       val,
 	}
 
@@ -44,11 +43,7 @@ func (c *Cache) Get(key string) ([]byte, bool) {
 	defer c.mtx.RUnlock()
 
 	entry, ok := c.entries[key]
-	if !ok {
-		return nil, false
-	}
-
-	return entry.val, true
+	return entry.val, ok
 }
 
 func (c *Cache) reapLoop(interval time.Duration) {
@@ -57,18 +52,17 @@ func (c *Cache) reapLoop(interval time.Duration) {
 	for {
 		select {
 		case <-ticker.C:
-			toRemove := make([]string, 0)
-			c.mtx.Lock()
-			for key, entry := range c.entries {
-				if entry.createdAt.Add(interval).Before(time.Now()) {
-					fmt.Println("Add to list")
-					toRemove = append(toRemove, key)
-				}
-			}
-			for _, key := range toRemove {
-				delete(c.entries, key)
-			}
-			c.mtx.Unlock()
+			c.reap(time.Now().UTC(), interval)
+		}
+	}
+}
+
+func (c *Cache) reap(now time.Time, interval time.Duration) {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
+	for key, entry := range c.entries {
+		if entry.createdAt.Before(now.Add(-interval)) {
+			delete(c.entries, key)
 		}
 	}
 }
