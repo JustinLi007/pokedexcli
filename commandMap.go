@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func commandMapForward(cfg *config) error {
+func commandMapForward(cfg *config, arg string) error {
 	response, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
 		return err
@@ -21,7 +21,7 @@ func commandMapForward(cfg *config) error {
 	return nil
 }
 
-func commandMapBack(cfg *config) error {
+func commandMapBack(cfg *config, arg string) error {
 	if cfg.prevLocationsURL == nil {
 		return errors.New("Top of page reached")
 	}
