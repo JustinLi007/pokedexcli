@@ -8,19 +8,7 @@ import (
 	"net/http"
 )
 
-type LocationDetail struct {
-	PokemonEncounters []PokemonEncounters `json:"pokemon_encounters"`
-}
-
-type PokemonEncounters struct {
-	Pokemon Pokemon `json:"pokemon"`
-}
-
-type Pokemon struct {
-	Name string `json:"name"`
-}
-
-func (c *Client) ListLocationDetails(locationName string) (LocationDetail, error) {
+func (c *Client) GetLocationDetails(locationName string) (LocationDetail, error) {
 	url := baseURL + "/location-area"
 
 	if locationName == "" {
@@ -50,10 +38,10 @@ func (c *Client) ListLocationDetails(locationName string) (LocationDetail, error
 		c.cache.Add(url, data)
 	}
 
-	encounter := LocationDetail{}
-	if err := json.Unmarshal(data, &encounter); err != nil {
+	locationResp := LocationDetail{}
+	if err := json.Unmarshal(data, &locationResp); err != nil {
 		return LocationDetail{}, err
 	}
 
-	return encounter, nil
+	return locationResp, nil
 }

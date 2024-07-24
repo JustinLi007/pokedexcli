@@ -12,7 +12,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config, string) error
+	callback    func(*config, ...string) error
 }
 
 type config struct {
@@ -31,6 +31,7 @@ func startRepl(cfg *config) {
 		if !ok {
 			if err := scanner.Err(); err != nil {
 				fmt.Fprintln(os.Stderr, err)
+				return
 			}
 		}
 
@@ -42,9 +43,9 @@ func startRepl(cfg *config) {
 		}
 
 		commandName := userInputParts[0]
-		commandArg := ""
-		if len(userInputParts) == 2 {
-			commandArg = userInputParts[1]
+		args := make([]string, 0)
+		if len(userInputParts) > 1 {
+			args = userInputParts[1:]
 		}
 
 		command, ok := commands[commandName]
@@ -53,7 +54,7 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		if err := command.callback(cfg, commandArg); err != nil {
+		if err := command.callback(cfg, args...); err != nil {
 			fmt.Fprintln(os.Stdout, err)
 			continue
 		}
