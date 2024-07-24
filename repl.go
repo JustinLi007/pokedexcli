@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/JustinLi007/pokedexcli/internal/database"
 	"github.com/JustinLi007/pokedexcli/internal/pokeapi"
 )
 
@@ -17,6 +18,7 @@ type cliCommand struct {
 
 type config struct {
 	pokeapiClient    pokeapi.Client
+	pokedex          *database.PokedexDB
 	nextLocationsURL *string
 	prevLocationsURL *string
 }
