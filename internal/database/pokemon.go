@@ -54,3 +54,18 @@ func (db *PokedexDB) GetPokemon(pokemonName string) (Pokemon, error) {
 
 	return pokemon, nil
 }
+
+func (db *PokedexDB) GetPokemons() ([]Pokemon, error) {
+	caughtPokemon := make([]Pokemon, 0)
+
+	pokedexStruct, err := db.LoadDB()
+	if err != nil {
+		return caughtPokemon, err
+	}
+
+	for _, value := range pokedexStruct.Pokedex {
+		caughtPokemon = append(caughtPokemon, value)
+	}
+
+	return caughtPokemon, nil
+}
