@@ -1,3 +1,13 @@
 {
-  "pokedex": {}
+  "pokedex": {
+    "lugia": {
+      "base_experience": 340
+    },
+    "luxio": {
+      "base_experience": 127
+    },
+    "spinda": {
+      "base_experience": 126
+    }
+  }
 }

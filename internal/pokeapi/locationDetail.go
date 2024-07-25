@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func (c *Client) GetLocationDetails(locationName string) (LocationDetail, error) {
 	url := baseURL + "/location-area"
 
-	if locationName == "" {
+	if len(strings.Fields(locationName)) == 0 {
 		return LocationDetail{}, errors.New("Location name not specified")
 	}
 
@@ -29,6 +30,10 @@ func (c *Client) GetLocationDetails(locationName string) (LocationDetail, error)
 			return LocationDetail{}, nil
 		}
 		defer resp.Body.Close()
+
+		if resp.StatusCode > 399 {
+			return LocationDetail{}, fmt.Errorf("Failed to retrieve details about %v\n", locationName)
+		}
 
 		data, err = io.ReadAll(resp.Body)
 		if err != nil {

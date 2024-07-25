@@ -12,10 +12,6 @@ type PokedexDB struct {
 	mtx  *sync.RWMutex
 }
 
-type Pokemon struct {
-	BaseExperience int `json:"base_experience"`
-}
-
 type PokedexStruct struct {
 	Pokedex map[string]Pokemon `json:"pokedex"`
 }

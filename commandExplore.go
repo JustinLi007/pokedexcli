@@ -10,9 +10,8 @@ func commandExplore(cfg *config, args ...string) error {
 		return errors.New("Must provide a location name")
 	}
 
-	fmt.Printf("Exploring %v...\n", args)
-
 	locationName := args[0]
+	fmt.Printf("Exploring %v...\n", locationName)
 	locationDetail, err := cfg.pokeapiClient.GetLocationDetails(locationName)
 	if err != nil {
 		return err
